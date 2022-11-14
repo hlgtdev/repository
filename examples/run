@@ -1,0 +1,5 @@
+DIR=$(realpath "$(dirname "$0")")
+
+CLASSPATH=$DIR/..
+
+groovy -cp $CLASSPATH $1/*.groovy

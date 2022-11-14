@@ -1,0 +1,82 @@
+---
+'@meta': "meta.design.Object"
+'@class': "model.Repository"
+keysSequence: 8
+entries:
+  '#1':
+    '@class': "model.Project"
+    '@id': "#1"
+    '@meta': "meta.design.Object"
+    aId: "executablejar"
+    deps:
+    - '@class': "model.Dependency"
+      '@id': "#2"
+      '@meta': "meta.design.Object"
+      '@parent': "#1"
+      aId: "joda-time"
+      gId: "joda-time"
+      v: "2.7"
+    - '@class': "model.Dependency"
+      '@id': "#3"
+      '@meta': "meta.design.Object"
+      '@parent': "#1"
+      aId: "junit"
+      gId: "junit"
+      v: "3.8.1"
+    - '@class': "model.Dependency"
+      '@id': "#4"
+      '@meta': "meta.design.Object"
+      '@parent': "#1"
+      aId: "jsch"
+      gId: "com.jcraft"
+      v: "0.1.54"
+    - '@class': "model.Dependency"
+      '@id': "#5"
+      '@meta': "meta.design.Object"
+      '@parent': "#1"
+      aId: "jackson-mapper-asl"
+      gId: "org.codehaus.jackson"
+      v: "1.7.7"
+    gId: "home.jar"
+    v: "1.0-SNAPSHOT"
+  '#2':
+    '@class': "model.Dependency"
+    '@id': "#2"
+    '@meta': "meta.design.Object"
+    '@parent': "#1"
+    aId: "joda-time"
+    gId: "joda-time"
+    v: "2.7"
+  '#3':
+    '@class': "model.Dependency"
+    '@id': "#3"
+    '@meta': "meta.design.Object"
+    '@parent': "#1"
+    aId: "junit"
+    gId: "junit"
+    v: "3.8.1"
+  '#4':
+    '@class': "model.Dependency"
+    '@id': "#4"
+    '@meta': "meta.design.Object"
+    '@parent': "#1"
+    aId: "jsch"
+    gId: "com.jcraft"
+    v: "0.1.54"
+  '#5':
+    '@class': "model.Dependency"
+    '@id': "#5"
+    '@meta': "meta.design.Object"
+    '@parent': "#1"
+    aId: "jackson-mapper-asl"
+    gId: "org.codehaus.jackson"
+    v: "1.7.7"
+  '#6': null
+  '#7': "Valeur1"
+  '#8': "Valeur1"
+  "1": null
+  "1668447301625": null
+  "2.0": null
+  "3.0": null
+  Clé1: null
+  Clé2: "Valeur3"
