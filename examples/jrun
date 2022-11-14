@@ -1,0 +1,16 @@
+DIR=$(realpath "$(dirname "$0")")
+
+CLASSPATH=$DIR/..
+
+CLASSPATH=$CLASSPATH:~/.m2/repository/org/apache/groovy/groovy/4.0.6/*
+CLASSPATH=$CLASSPATH:~/.m2/repository/org/apache/groovy/groovy-xml/4.0.6/*
+CLASSPATH=$CLASSPATH:~/.m2/repository/org/apache/groovy/groovy-templates/4.0.6/*
+CLASSPATH=$CLASSPATH:~/.m2/repository/org/apache/groovy/groovy-yaml/4.0.6/*
+CLASSPATH=$CLASSPATH:~/.m2/repository/org/apache/groovy/groovy-json/4.0.6/*
+CLASSPATH=$CLASSPATH:~/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.13.4/*
+CLASSPATH=$CLASSPATH:~/.m2/repository/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.13.4/*
+CLASSPATH=$CLASSPATH:~/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.13.4/*
+CLASSPATH=$CLASSPATH:~/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.13.4/*
+CLASSPATH=$CLASSPATH:~/.m2/repository/org/yaml/snakeyaml/1.31/*
+
+java -cp $CLASSPATH groovy.ui.GroovyMain $1/*.groovy
