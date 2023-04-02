@@ -13,4 +13,4 @@ CLASSPATH=$CLASSPATH:~/.m2/repository/com/fasterxml/jackson/core/jackson-databin
 CLASSPATH=$CLASSPATH:~/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.13.4/*
 CLASSPATH=$CLASSPATH:~/.m2/repository/org/yaml/snakeyaml/1.31/*
 
-java -cp $CLASSPATH groovy.ui.GroovyMain $1/*.groovy
+java -cp $CLASSPATH groovy.ui.GroovyMain $1/*.groovy "$@"

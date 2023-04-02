@@ -1,0 +1,155 @@
+/*______________________________________________________________________
+
+	<<@action[(paramètres)]>>							:	exécuter action(null, paramètres)
+	<<clé[@action[(paramètres)]]>>						:	référentiel[clé] = action(null, paramètres)
+	<<clé[@action[(paramètres)]]>>=valeur				:	référentiel[clé] = action(valeur, paramètres)
+	<<clé[@action1[(action2(paramètres))]]>>=valeur		:	référentiel[clé] = action1(action2(valeur, paramètres))
+	<<clé[@action1[(action2(), paramètres)]]>>=valeur	:	référentiel[clé] = action1(action2(valeur), paramètres)
+	...
+
+	Actions
+	- @use		:	utiliser un module définissant le comportement d'un élément du référentiel
+	- @eval		:	évaluer la chaine de caractères représentant la valeur
+	- @yaml		:	évaluer la chaine de caractères Yaml représentant la valeur
+	- @yamlFile	:	évaluer le fichier Yaml représentant la valeur
+	- @yamlFiles:	évaluer les fichiers Yaml sous le répertoire/*.ext (récursif) indiqué au niveau de la valeur
+	- @show 	: 	afficher la valeur dans la documentation & la console
+++	- @literate	:	ajouter au référentiel un projet Literate externe
+
+	{{...}}		:	idem <<...@show>>
+  ______________________________________________________________________
+*/
+<<@use>>=analyse.assistant.Scenario
+//<<@use>>=a.b.C
+//______________________________________________________________________
+//
+# Literate programming
+
+## Description
+
+Voici un exemple de description Literate.
+
+Cela alterne:
+	- des blocs de texte au format Markdown
+	- des directives de lecture/écriture dans le référentiel
+//______________________________________________________________________
+//
+<<GEN_TARGET>>=python
+//______________________________________________________________________
+//
+<<entier::a@eval>>=1
+<<entier::b@eval>>=2 + 0
+/*
+	 §	:	début de paragraphe
+	.§.	:	supprime les whitespaces jusqu'au premier CRLF inclu, en début et fin de paragraphe
+	-§-	:	supprime tous les whitespaces en début et fin de paragraphe
+	 §§	:	fin de paragraphe
+*/
+<<entier::r@eval>>=§
+	3
+§§
+{{string::s}}=une chaine de caractères
+//______________________________________________________________________
+//
+<<@yaml>>=§
+	id: Additionner
+	'@meta': analyse.assistant.Scenario
+	participants:
+		u:
+			§: Utilisateur
+		s:
+			§: Système
+	interactions:
+	-	'u>s':
+			§:	saisit a et b
+			in:
+				a: |-
+					{{REF=entier::a}}
+				b: |-
+					{{REF=entier::b}}
+	-	'u>s':
+			§:	clique sur +
+	-	'@s':
+			id:	addAtoB
+			§:	additionne a et b
+	-	'u<s':
+			§:	affiche r
+			out:
+				r: |-
+					{{REF=entier::r}}
+§§
+//______________________________________________________________________
+//
+<<@yaml>>=§
+	id: Additionner
+	'@meta':	conception.assistant.Scenario
+	extend:		analyse.assistant.Scenario::Additionner
+	participants:
+		calcEP:
+			rest:
+				path : /calcul
+			class: application.endpoint.CalculEndPoint
+		calcS:
+			class: application.service.CalculService
+	after:
+		addAtoB:
+			impl:
+			-	New:
+					participant: calcS
+					§: |-
+						this.calculService = {{GTG=constructor}}()
+			-	New:
+					participant: calcEP
+					§: |-
+						this.calculEndPoint = {{GTG=constructor}}(
+							calculService: application.service.CalculService = calculService)
+			-	Call:
+					participant: calcEP
+					rest:
+						method : GET
+						path : /addition?a={a}&b={b}
+					§: |-
+						r = this.calculEndpoint.additionner(
+							a: int = {{REF=entier::a}},
+							b: int = {{REF=entier::b}}): int
+					impl:
+					- 	If:
+							§: |-
+								non {{GTG=paramètres valides: a, b}}
+							then:
+							-	Raise:
+									§: |-
+										ServiceException('Paramètres invalides: a=%s b=%s': a, b)
+					-	Set:
+							§: |-
+								bUnchanged: int = 0
+					-	Set:
+							§: |-
+								bUnchanged = b + 1 - 1
+					-	Call:
+							participant: calcS
+							§: |-
+								r = this.calculService.additionner(
+									a: int = a,
+									b: int = bUnchanged + 0): int
+							impl:
+							-	Return: a + b
+					-	Return: r
+§§
+/*______________________________________________________________________
+
+	TODO: Décorer les input models à partir des §...
+  ______________________________________________________________________
+*/
+<<@yamlFile>>=./calcul/input/yaml/query.yaml
+//______________________________________________________________________
+//
+<<@yamlFiles>>=./calcul/input/yaml/*.yaml
+//______________________________________________________________________
+//
+{{Query::analyse participants}}
+//______________________________________________________________________
+//
+<<Query::analyse participants@show index>>
+//______________________________________________________________________
+//

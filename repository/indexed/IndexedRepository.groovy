@@ -54,11 +54,12 @@ class IndexedRepository extends Repository {
 		return super.display()
 	}
 
-	def displayIndex(currentPath = '.') {
+	def getValuedIndex(currentPath = '.') {
+		
+		currentPath = currentPath.startsWith('.') ? currentPath : "./$currentPath"
 		
 		this.buildIndex()
 
-		def lg		= 160
 		def lines	= []
 
 		this.index.each { path, type ->
@@ -74,6 +75,15 @@ class IndexedRepository extends Repository {
 				lines << "${displayedPath} -> ${type}${value}"
 			}
 		}
+		
+		return lines
+	}
+
+	def displayIndex(currentPath = '.') {
+		
+		def lg		= 160
+		def lines	= this.getValuedIndex(currentPath)
+
 		println('=' * lg)
 		println("  INDEX CONTEXT: ${currentPath}")
 		println('=' * lg)
@@ -196,6 +206,7 @@ class IndexedRepository extends Repository {
 			'@meta':		META_VALUE_OBJECT,
 			'@class':		"model.IndexedRepository",
 			keysSequence:	this.keysSequence,	
+			modules:		this.modules.keySet(),
 			entries:		this.entries,
 			index:			this.index,
 		]

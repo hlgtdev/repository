@@ -1,0 +1,7 @@
+	'@meta': Query
+	id: analyse participants
+	find:
+	-	participants
+	where:
+	-	'@meta':
+		-	analyse.Scenario

@@ -170,6 +170,20 @@ referentiel.addEntryFromYaml("essai.yaml::model.Project", """
 	methods:		[]
 """)
 
+def element = referentiel.createValueFromYaml("""
+	id:			'ajout: java.util.List<model.Dependency>'
+	name:		ajout
+	type:		java.util.List
+	subType:	model.Dependency
+""")
+
+element.b = 255
+
+//referentiel.getElementByPath('./essai.yaml::model.Project/relations').element.clear()
+//referentiel.getElementByPath('./essai.yaml::model.Project/relations').element << element
+referentiel.getElementByPath('./essai.yaml::model.Project').element.relations = [ element ]
+
 referentiel.save()
+	.displayIndex()
 //______________________________________________________________________
 //

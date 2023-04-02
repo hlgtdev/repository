@@ -8,10 +8,15 @@ class Repository {
 
 	static def META_VALUE_OBJECT	= 'meta.design.Object'
 	
+	static def MODULES_PATH			= "/home/jl/projets/UTLDEV-repository/groovy/modules/"
+	static def GROOVY_SHELL			= new GroovyShell()
+	
 	def keysSequence
 	def entries
 	def areSubObjectsManaged
 	def filename
+	def modules
+	def lastEntry
 	
 	protected Repository() {
 
@@ -19,11 +24,29 @@ class Repository {
 		entries					= [ : ]
 		areSubObjectsManaged	= true
 		filename				= null
+		modules					= [ : ]
 	}
 	
 	def static create() {
 		
 		return new Repository()
+	}
+	
+	def use(module) {
+		
+		if (! (module in this.modules)) {
+			def moduleFile = new File(MODULES_PATH + module.replaceAll("\\.", "/") + ".groovy")
+			
+			if (! moduleFile.exists()) {
+				throw new RuntimeException("### MODULE NON TROUVE: $module\n")
+			}
+			def moduleScript = GROOVY_SHELL.parse(moduleFile)				
+			moduleScript.initModule(this)
+
+			this.modules[module] = moduleScript
+		}
+		
+		return this
 	}
 	
 	def static required(value) {
@@ -56,11 +79,15 @@ class Repository {
 
 		if (! (value instanceof Map) || ! ('@meta' in value) || ! this.areSubObjectsManaged) {
 			if (key == null) {
-				key = value instanceof Map && '@meta' in value && 'id' in value
-						? "${value['@meta']}::${value['id']}"
-						: "#${++this.keysSequence}"
+				def idPrefix = value instanceof Map && '@meta' in value ? "${value['@meta']}::" : ""
+				key = value instanceof Map && 'id' in value ? "${idPrefix}${value['id']}" : "#${++this.keysSequence}"
 			}
+
+			moduleDelegate("onValidate", key, value)
 			this.entries[key] = value
+			this.lastEntry = key
+			moduleDelegate("onEntryAdded", key, value)
+
 			key = null	// la clé des éventuels sous-objets sera à générer
 		}
 
@@ -68,6 +95,22 @@ class Repository {
 			this.addSubObjects(key, value)
 		}
 		this.entries = this.entries.sort()
+		
+		return this
+	}
+
+	def addEntryFromYamlFile(yamlFile) {
+
+		this.addEntryFromYamlFile(null, yamlFile)
+
+		return this
+	}
+
+	def addEntryFromYamlFile(key, yamlFile) {
+
+		def yamlSrc = yamlFile.text
+		
+		this.addEntryFromYaml(key, yamlSrc)
 
 		return this
 	}
@@ -155,6 +198,7 @@ class Repository {
 			'@meta':		META_VALUE_OBJECT,
 			'@class':		"model.Repository",
 			keysSequence:	this.keysSequence,	
+			modules:		this.modules.keySet(),
 			entries:		this.entries,
 		]
 	}
@@ -165,6 +209,39 @@ class Repository {
 		yaml(this.toMap())
 
 		return yaml.toString()
+	}
+	
+	def addMetaFile(filename, meta) {
+				
+		def id = filename.replaceAll("/", "\\\\")
+		
+		this.addEntryFromYaml("""
+			'@meta'		: ${meta}
+			id			: ${id}
+			filename	: ${filename}
+		""")
+		
+		return this
+	}
+
+	def addMetaFiles(rootDir, extension, meta) {
+
+		println("-" * 160)
+
+		def n = 0
+		
+		new File(rootDir).eachFileRecurse { f ->
+			
+			if (f.name.endsWith(extension)) {
+				this.addMetaFile(f.toString(), meta)
+				n++
+			}
+		}
+		println("-" * 160)
+		println(">>> [ # FILES] $n")
+		println("-" * 160)
+
+		return this
 	}
 	
 	private def addSubObjects(key, root, parentId = null) {
@@ -201,6 +278,17 @@ class Repository {
 			return root
 		} else {
 			return root
+		}
+	}
+	
+	private def moduleDelegate(method, key, value) {
+		
+		if (value instanceof Map && '@meta' in value) {
+			def meta = value.'@meta'
+			
+			if (meta in modules) {
+				modules[meta]."${method}"(key, value)
+			}
 		}
 	}
 }

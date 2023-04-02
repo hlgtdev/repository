@@ -34,7 +34,7 @@ entries:
   '#3': "Valeur1"
   '#4': "Valeur1"
   "1": null
-  "1668447310048": null
+  "1679731342285": null
   "2.0": null
   "3.0": null
   Clé1: null
@@ -57,10 +57,11 @@ entries:
       name: "v"
       type: "java.lang.String"
     relations:
-    - id: "deps: java.util.List<model.Dependency>"
-      name: "deps"
+    - id: "ajout: java.util.List<model.Dependency>"
+      name: "ajout"
       type: "java.util.List"
       subType: "model.Dependency"
+      b: 255
     methods: []
 index:
   ".": "Map *=11"
@@ -99,7 +100,7 @@ index:
   "./#3": "String"
   "./#4": "String"
   "./1": "(null)"
-  "./1668447310048": "(null)"
+  "./1679731342285": "(null)"
   "./2.0": "(null)"
   "./3.0": "(null)"
   "./Clé1": "(null)"
@@ -125,9 +126,10 @@ index:
   "./essai.yaml::model.Project/attributes/2/name": "String"
   "./essai.yaml::model.Project/attributes/2/type": "String"
   "./essai.yaml::model.Project/relations": "List *=1"
-  "./essai.yaml::model.Project/relations/0": "Map *=4"
+  "./essai.yaml::model.Project/relations/0": "Map *=5"
   "./essai.yaml::model.Project/relations/0/id": "String"
   "./essai.yaml::model.Project/relations/0/name": "String"
   "./essai.yaml::model.Project/relations/0/type": "String"
   "./essai.yaml::model.Project/relations/0/subType": "String"
+  "./essai.yaml::model.Project/relations/0/b": "Integer"
   "./essai.yaml::model.Project/methods": "List *=0"

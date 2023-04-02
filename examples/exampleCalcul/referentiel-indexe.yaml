@@ -1,0 +1,277 @@
+---
+'@meta': "meta.design.Object"
+'@class': "model.IndexedRepository"
+keysSequence: 0
+modules:
+- "analyse.assistant.Scenario"
+entries:
+  GEN_TARGET: "python"
+  Processor::plantuml actors:
+    '@meta': "Processor"
+    id: "plantuml actors"
+    processOrder: 1
+    source: "Query::analyse participants"
+    process:
+    - def:
+      - s: ""
+      - "n": 0
+    - add:
+      - entry:
+          key: "participantId"
+          value: "'______________________________________________________________________\n\
+            '\n'  DEBUT PARTICIPANTS\n'______________________________________________________________________\n\
+            '"
+    - forEach:
+        item: "participant"
+        process:
+        - def:
+          - participantId: "participant.key"
+          - participantLabel: "participant.key.§"
+        - add:
+          - entry:
+              key: "participantId"
+              concat:
+              - "actor "
+              - "participantId"
+              - ": "
+              - "participantLabel"
+    - add:
+      - entry:
+          key: "participantId"
+          value: "'______________________________________________________________________\n\
+            '\n'  FIN PARTICIPANTS\n'______________________________________________________________________\n\
+            '"
+  Query::analyse participants:
+    '@meta': "Query"
+    id: "analyse participants"
+    find:
+    - "participants"
+    where:
+    - '@meta':
+      - "analyse.Scenario"
+  analyse.assistant.Scenario::Additionner:
+    id: "Additionner"
+    '@meta': "analyse.assistant.Scenario"
+    participants:
+      u:
+        §: "Utilisateur"
+      s:
+        §: "Système"
+    interactions:
+    - u>s:
+        §: "saisit a et b"
+        in:
+          a: "{{REF=entier::a}}"
+          b: "{{REF=entier::b}}"
+    - u>s:
+        §: "clique sur +"
+    - '@s':
+        id: "addAtoB"
+        §: "additionne a et b"
+    - u<s:
+        §: "affiche r"
+        out:
+          r: "{{REF=entier::r}}"
+  conception.assistant.Scenario::Additionner:
+    id: "Additionner"
+    '@meta': "conception.assistant.Scenario"
+    extend: "analyse.assistant.Scenario::Additionner"
+    participants:
+      calcEP:
+        rest:
+          path: "/calcul"
+        class: "application.endpoint.CalculEndPoint"
+      calcS:
+        class: "application.service.CalculService"
+    after:
+      addAtoB:
+        impl:
+        - New:
+            participant: "calcS"
+            §: "this.calculService = {{GTG=constructor}}()"
+        - New:
+            participant: "calcEP"
+            §: "this.calculEndPoint = {{GTG=constructor}}(\n  calculService: application.service.CalculService\
+              \ = calculService)"
+        - Call:
+            participant: "calcEP"
+            rest:
+              method: "GET"
+              path: "/addition?a={a}&b={b}"
+            §: "r = this.calculEndpoint.additionner(\n  a: int = {{REF=entier::a}},\n\
+              \  b: int = {{REF=entier::b}}): int"
+            impl:
+            - If:
+                §: "non {{GTG=paramètres valides: a, b}}"
+                then:
+                - Raise:
+                    §: "ServiceException('Paramètres invalides: a=%s b=%s': a, b)"
+            - Set:
+                §: "bUnchanged: int = 0"
+            - Set:
+                §: "bUnchanged = b + 1 - 1"
+            - Call:
+                participant: "calcS"
+                §: "r = this.calculService.additionner(\n  a: int = a,\n  b: int =\
+                  \ bUnchanged + 0): int"
+                impl:
+                - Return: "a + b"
+            - Return: "r"
+  entier::a: 1
+  entier::b: 2
+  entier::r: 3
+index:
+  ".": "Map *=8"
+  "./GEN_TARGET": "String"
+  "./Processor::plantuml actors": "Map *=5"
+  "./Processor::plantuml actors/@meta": "String"
+  "./Processor::plantuml actors/id": "String"
+  "./Processor::plantuml actors/processOrder": "Integer"
+  "./Processor::plantuml actors/source": "String"
+  "./Processor::plantuml actors/process": "List *=4"
+  "./Processor::plantuml actors/process/0": "Map *=1"
+  "./Processor::plantuml actors/process/0/def": "List *=2"
+  "./Processor::plantuml actors/process/0/def/0": "Map *=1"
+  "./Processor::plantuml actors/process/0/def/0/s": "String"
+  "./Processor::plantuml actors/process/0/def/1": "Map *=1"
+  "./Processor::plantuml actors/process/0/def/1/n": "Integer"
+  "./Processor::plantuml actors/process/1": "Map *=1"
+  "./Processor::plantuml actors/process/1/add": "List *=1"
+  "./Processor::plantuml actors/process/1/add/0": "Map *=1"
+  "./Processor::plantuml actors/process/1/add/0/entry": "Map *=2"
+  "./Processor::plantuml actors/process/1/add/0/entry/key": "String"
+  "./Processor::plantuml actors/process/1/add/0/entry/value": "String"
+  "./Processor::plantuml actors/process/2": "Map *=1"
+  "./Processor::plantuml actors/process/2/forEach": "Map *=2"
+  "./Processor::plantuml actors/process/2/forEach/item": "String"
+  "./Processor::plantuml actors/process/2/forEach/process": "List *=2"
+  "./Processor::plantuml actors/process/2/forEach/process/0": "Map *=1"
+  "./Processor::plantuml actors/process/2/forEach/process/0/def": "List *=2"
+  "./Processor::plantuml actors/process/2/forEach/process/0/def/0": "Map *=1"
+  "./Processor::plantuml actors/process/2/forEach/process/0/def/0/participantId": "String"
+  "./Processor::plantuml actors/process/2/forEach/process/0/def/1": "Map *=1"
+  "./Processor::plantuml actors/process/2/forEach/process/0/def/1/participantLabel": "String"
+  "./Processor::plantuml actors/process/2/forEach/process/1": "Map *=1"
+  "./Processor::plantuml actors/process/2/forEach/process/1/add": "List *=1"
+  "./Processor::plantuml actors/process/2/forEach/process/1/add/0": "Map *=1"
+  "./Processor::plantuml actors/process/2/forEach/process/1/add/0/entry": "Map *=2"
+  "./Processor::plantuml actors/process/2/forEach/process/1/add/0/entry/key": "String"
+  "./Processor::plantuml actors/process/2/forEach/process/1/add/0/entry/concat": "List\
+    \ *=4"
+  "./Processor::plantuml actors/process/2/forEach/process/1/add/0/entry/concat/0": "String"
+  "./Processor::plantuml actors/process/2/forEach/process/1/add/0/entry/concat/1": "String"
+  "./Processor::plantuml actors/process/2/forEach/process/1/add/0/entry/concat/2": "String"
+  "./Processor::plantuml actors/process/2/forEach/process/1/add/0/entry/concat/3": "String"
+  "./Processor::plantuml actors/process/3": "Map *=1"
+  "./Processor::plantuml actors/process/3/add": "List *=1"
+  "./Processor::plantuml actors/process/3/add/0": "Map *=1"
+  "./Processor::plantuml actors/process/3/add/0/entry": "Map *=2"
+  "./Processor::plantuml actors/process/3/add/0/entry/key": "String"
+  "./Processor::plantuml actors/process/3/add/0/entry/value": "String"
+  "./Query::analyse participants": "Map *=4"
+  "./Query::analyse participants/@meta": "String"
+  "./Query::analyse participants/id": "String"
+  "./Query::analyse participants/find": "List *=1"
+  "./Query::analyse participants/find/0": "String"
+  "./Query::analyse participants/where": "List *=1"
+  "./Query::analyse participants/where/0": "Map *=1"
+  "./Query::analyse participants/where/0/@meta": "List *=1"
+  "./Query::analyse participants/where/0/@meta/0": "String"
+  "./analyse.assistant.Scenario::Additionner": "Map *=4"
+  "./analyse.assistant.Scenario::Additionner/id": "String"
+  "./analyse.assistant.Scenario::Additionner/@meta": "String"
+  "./analyse.assistant.Scenario::Additionner/participants": "Map *=2"
+  "./analyse.assistant.Scenario::Additionner/participants/u": "Map *=1"
+  "./analyse.assistant.Scenario::Additionner/participants/u/§": "String"
+  "./analyse.assistant.Scenario::Additionner/participants/s": "Map *=1"
+  "./analyse.assistant.Scenario::Additionner/participants/s/§": "String"
+  "./analyse.assistant.Scenario::Additionner/interactions": "List *=4"
+  "./analyse.assistant.Scenario::Additionner/interactions/0": "Map *=1"
+  "./analyse.assistant.Scenario::Additionner/interactions/0/u>s": "Map *=2"
+  "./analyse.assistant.Scenario::Additionner/interactions/0/u>s/§": "String"
+  "./analyse.assistant.Scenario::Additionner/interactions/0/u>s/in": "Map *=2"
+  "./analyse.assistant.Scenario::Additionner/interactions/0/u>s/in/a": "String"
+  "./analyse.assistant.Scenario::Additionner/interactions/0/u>s/in/b": "String"
+  "./analyse.assistant.Scenario::Additionner/interactions/1": "Map *=1"
+  "./analyse.assistant.Scenario::Additionner/interactions/1/u>s": "Map *=1"
+  "./analyse.assistant.Scenario::Additionner/interactions/1/u>s/§": "String"
+  "./analyse.assistant.Scenario::Additionner/interactions/2": "Map *=1"
+  "./analyse.assistant.Scenario::Additionner/interactions/2/@s": "Map *=2"
+  "./analyse.assistant.Scenario::Additionner/interactions/2/@s/id": "String"
+  "./analyse.assistant.Scenario::Additionner/interactions/2/@s/§": "String"
+  "./analyse.assistant.Scenario::Additionner/interactions/3": "Map *=1"
+  "./analyse.assistant.Scenario::Additionner/interactions/3/u<s": "Map *=2"
+  "./analyse.assistant.Scenario::Additionner/interactions/3/u<s/§": "String"
+  "./analyse.assistant.Scenario::Additionner/interactions/3/u<s/out": "Map *=1"
+  "./analyse.assistant.Scenario::Additionner/interactions/3/u<s/out/r": "String"
+  "./conception.assistant.Scenario::Additionner": "Map *=5"
+  "./conception.assistant.Scenario::Additionner/id": "String"
+  "./conception.assistant.Scenario::Additionner/@meta": "String"
+  "./conception.assistant.Scenario::Additionner/extend": "String"
+  "./conception.assistant.Scenario::Additionner/participants": "Map *=2"
+  "./conception.assistant.Scenario::Additionner/participants/calcEP": "Map *=2"
+  "./conception.assistant.Scenario::Additionner/participants/calcEP/rest": "Map *=1"
+  "./conception.assistant.Scenario::Additionner/participants/calcEP/rest/path": "String"
+  "./conception.assistant.Scenario::Additionner/participants/calcEP/class": "String"
+  "./conception.assistant.Scenario::Additionner/participants/calcS": "Map *=1"
+  "./conception.assistant.Scenario::Additionner/participants/calcS/class": "String"
+  "./conception.assistant.Scenario::Additionner/after": "Map *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB": "Map *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl": "List *=3"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/0": "Map *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/0/New": "Map *=2"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/0/New/participant": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/0/New/§": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/1": "Map *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/1/New": "Map *=2"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/1/New/participant": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/1/New/§": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2": "Map *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call": "Map *=4"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/participant": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/rest": "Map\
+    \ *=2"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/rest/method": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/rest/path": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/§": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl": "List\
+    \ *=5"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/0": "Map\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/0/If": "Map\
+    \ *=2"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/0/If/§": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/0/If/then": "List\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/0/If/then/0": "Map\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/0/If/then/0/Raise": "Map\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/0/If/then/0/Raise/§": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/1": "Map\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/1/Set": "Map\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/1/Set/§": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/2": "Map\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/2/Set": "Map\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/2/Set/§": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/3": "Map\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/3/Call": "Map\
+    \ *=3"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/3/Call/participant": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/3/Call/§": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/3/Call/impl": "List\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/3/Call/impl/0": "Map\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/3/Call/impl/0/Return": "String"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/4": "Map\
+    \ *=1"
+  "./conception.assistant.Scenario::Additionner/after/addAtoB/impl/2/Call/impl/4/Return": "String"
+  "./entier::a": "Integer"
+  "./entier::b": "Integer"
+  "./entier::r": "Integer"

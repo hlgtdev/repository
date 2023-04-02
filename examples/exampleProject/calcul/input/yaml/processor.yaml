@@ -1,0 +1,40 @@
+	'@meta': Processor
+	id: plantuml actors
+	processOrder:	${++processOrder}
+	source:			Query::analyse participants
+	process:
+	-	def:
+		-	s:	""
+		-	n:	0
+	-	add:
+		- 	entry:
+				key:	participantId
+				value:	|-
+					'______________________________________________________________________
+					'
+					'	DEBUT PARTICIPANTS
+					'______________________________________________________________________
+					'
+	-	forEach:
+			item:	participant
+			process:
+			-	def:
+				-	participantId:		participant.key
+				-	participantLabel:	participant.key.§
+			-	add:
+				- 	entry:
+						key:	participantId
+						concat:
+						-	"actor "
+						-	participantId
+						-	": "
+						-	participantLabel
+	-	add:
+		- 	entry:
+				key:	participantId
+				value:	|-
+					'______________________________________________________________________
+					'
+					'	FIN PARTICIPANTS
+					'______________________________________________________________________
+					'
